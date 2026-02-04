@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>برای روزهایی که توضیحش سخته</title>
+<title>روزت چطور بود؟</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap');
 
 body {
   font-family: 'Vazirmatn', sans-serif;
-  background: #fdf6f0;
+  background: #ffffff;
   margin: 0;
   padding: 0;
-  color: #333;
+  color: #0B3D91;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,7 +23,7 @@ body {
   max-width: 420px;
   width: 90%;
   padding: 30px 20px;
-  background: #fff8f2;
+  background: #e6f0ff; /* آبی روشن */
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   text-align: center;
@@ -32,13 +32,13 @@ body {
 h1 {
   font-size: 24px;
   margin-bottom: 18px;
-  color: #6a4a3c;
+  color: #0B3D91; /* آبی کاربنی */
 }
 
 p {
   font-size: 16px;
   line-height: 1.7;
-  color: #4a3d3c;
+  color: #0B3D91;
 }
 
 button {
@@ -53,21 +53,26 @@ button {
 }
 
 button.primary {
-  background: #6a4a3c;
+  background: #0B3D91;
   color: #fff;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
 button.option {
-  background: #ffe8d6;
-  color: #6a4a3c;
+  background: #cce0ff; /* آبی ملایم */
+  color: #0B3D91;
 }
 
 .hidden {
   display: none;
+}
+
+input[type=date] {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #0B3D91;
+  margin: 10px 0;
+  width: 100%;
 }
 </style>
 </head>
@@ -75,17 +80,14 @@ button.option {
 
 <div class="container">
 
-  <!-- صفحه ۱ -->
+  <!-- صفحه ۱: خوش‌آمد و ثبت احساس روزانه -->
   <div id="step1">
     <h1>برای روزهایی که توضیحش سخته</h1>
-    <p>
-      لازم نیست توضیح بدی.<br>
-      فقط اگه خواستی، بگو امروز چطور کنارت باشم.
-    </p>
+    <p>لازم نیست توضیح بدی. فقط اگه خواستی، بگو امروز چطور کنارت باشم.</p>
     <button class="primary" onclick="nextStep(2)">بگم امروز چطورم</button>
   </div>
 
-  <!-- صفحه ۲ -->
+  <!-- صفحه ۲: انتخاب حالت روزانه -->
   <div id="step2" class="hidden">
     <h1>الان بیشتر کدوم حسم؟</h1>
     <button class="option" onclick="setMood('خوب')">🙂 حالم خوبه</button>
@@ -93,7 +95,7 @@ button.option {
     <button class="option" onclick="setMood('حساس')">😔 حساسم</button>
   </div>
 
-  <!-- صفحه ۳ -->
+  <!-- صفحه ۳: نیاز امروز -->
   <div id="step3" class="hidden">
     <h1>امروز دوست دارم:</h1>
     <button class="option" onclick="setNeed('بغل')">🫂 بغلم کنی</button>
@@ -103,31 +105,69 @@ button.option {
     <button class="option" onclick="setNeed('تنهایی')">🕊️ می‌خوام تنها باشم</button>
   </div>
 
-  <!-- صفحه ۴ -->
+  <!-- صفحه ۴: ثبت آخرین پریود -->
   <div id="step4" class="hidden">
-    <h1>🌱</h1>
-    <p>
-      احساساتت معتبره.<br>
-      حتی اگه نتونی براش دلیل پیدا کنی.
-    </p>
+    <h1>ثبت آخرین پریود</h1>
+    <p>تاریخ اولین روز پریود اخیرت را وارد کن:</p>
+    <input type="date" id="lastPeriod" />
+    <button class="primary" onclick="savePeriod()">ثبت</button>
+  </div>
+
+  <!-- صفحه ۵: پیام امن و پیش‌بینی -->
+  <div id="step5" class="hidden">
+    <h1>🌱 وضعیت امروز</h1>
+    <p id="moodDisplay">حالت: -</p>
+    <p id="needDisplay">نیاز امروز: -</p>
+    <p id="nextPeriodDisplay">پریود بعدی: -</p>
+    <p id="nextPMSDisplay">PMS بعدی: -</p>
   </div>
 
 </div>
 
 <script>
-function nextStep(step) {
-  document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
-  document.getElementById('step' + step).classList.remove('hidden');
+function nextStep(step){
+  document.querySelectorAll('.container > div').forEach(div=>div.classList.add('hidden'));
+  document.getElementById('step'+step).classList.remove('hidden');
 }
 
-function setMood(mood) {
+// ثبت احساس روزانه
+function setMood(mood){
   localStorage.setItem('mood', mood);
   nextStep(3);
 }
 
-function setNeed(need) {
+function setNeed(need){
   localStorage.setItem('need', need);
   nextStep(4);
+}
+
+// ثبت پریود و پیش‌بینی
+function savePeriod(){
+  const last = document.getElementById('lastPeriod').value;
+  if(!last){ alert('لطفاً تاریخ را انتخاب کن'); return; }
+  localStorage.setItem('lastPeriod', last);
+
+  // محاسبه پیش‌بینی ساده
+  const cycleLength = 28; // میانگین چرخه
+  const pmsLength = 5; // طول PMS
+
+  const lastDate = new Date(last);
+  const nextPeriod = new Date(lastDate.getTime() + cycleLength*24*60*60*1000);
+  const nextPMSStart = new Date(nextPeriod.getTime() - pmsLength*24*60*60*1000);
+
+  localStorage.setItem('nextPeriod', nextPeriod.toISOString().split('T')[0]);
+  localStorage.setItem('nextPMS', nextPMSStart.toISOString().split('T')[0]);
+
+  showStatus();
+}
+
+// نمایش وضعیت نهایی
+function showStatus(){
+  nextStep(5);
+  document.getElementById('moodDisplay').textContent = `حالت: ${localStorage.getItem('mood')||'-'}`;
+  document.getElementById('needDisplay').textContent = `نیاز امروز: ${localStorage.getItem('need')||'-'}`;
+  document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${localStorage.getItem('nextPeriod')||'-'}`;
+  document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${localStorage.getItem('nextPMS')||'-'}`;
 }
 </script>
 
