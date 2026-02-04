@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برای روزهایی که توضیحش سخته</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  background: #f6f7f8;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 15px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+button.primary {
+  background: #222;
+  color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- صفحه ۱ -->
+  <div id="step1">
+    <h1>برای روزهایی که توضیح‌دادنش سخته</h1>
+    <p>
+      لازم نیست توضیح بدی.<br>
+      فقط اگه خواستی، بگو امروز چطور کنارت باشم.
+    </p>
+    <button class="primary" onclick="nextStep(2)">
+      بگم امروز چطورم
+    </button>
+  </div>
+
+  <!-- صفحه ۲ -->
+  <div id="step2" class="hidden">
+    <h1>الان بیشتر کدوم حسم؟</h1>
+    <button onclick="setMood('خوب')">🙂 حالم خوبه</button>
+    <button onclick="setMood('خسته')">😐 خسته‌ام</button>
+    <button onclick="setMood('حساس')">😔 حساسم</button>
+  </div>
+
+  <!-- صفحه ۳ -->
+  <div id="step3" class="hidden">
+    <h1>امروز دوست دارم:</h1>
+    <button onclick="setNeed('بغل')">🫂 بغلم کنی</button>
+    <button onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
+    <button onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
+    <button onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
+    <button onclick="setNeed('تنهایی')">🕊️ می‌خوام تنها باشم</button>
+  </div>
+
+  <!-- صفحه ۴ -->
+  <div id="step4" class="hidden">
+    <h1>🌱</h1>
+    <p>
+      احساساتت معتبره.<br>
+      حتی اگه نتونی براش دلیل پیدا کنی.
+    </p>
+  </div>
+
+</div>
+
+<script>
+function nextStep(step) {
+  document.querySelectorAll('.container > div')
+    .forEach(div => div.classList.add('hidden'));
+  document.getElementById('step' + step).classList.remove('hidden');
+}
+
+function setMood(mood) {
+  localStorage.setItem('mood', mood);
+  nextStep(3);
+}
+
+function setNeed(need) {
+  localStorage.setItem('need', need);
+  nextStep(4);
+}
+</script>
+
+</body>
+</html>
