@@ -4,183 +4,130 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>روزت چطور بود؟</title>
+
+<!-- jalaali-js برای تبدیل تاریخ شمسی -->
+<script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
+
+<!-- Persian datepicker -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-date.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap');
 
 body {
   font-family: 'Vazirmatn', sans-serif;
   background: #ffffff;
-  margin: 0;
-  color: #0B3D91;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
+  margin:0;
+  color:#0B3D91;
+  display:flex;
+  justify-content:center;
+  padding:20px;
 }
 
 .container {
   max-width: 440px;
   width: 100%;
-  background: #e6f0ff; /* آبی روشن */
+  background: #e6f0ff;
   border-radius: 16px;
-  padding: 20px 20px 40px 20px;
+  padding: 20px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
-h1 {
-  font-size: 24px;
-  color: #0B3D91;
-  margin-bottom: 12px;
-  text-align: center;
-}
+h1, h2 { color:#0B3D91; text-align:center; }
 
-p { font-size:16px; margin:6px 0; }
+.tabs { display:flex; justify-content:space-around; margin-bottom:15px; }
+.tab-btn { flex:1; padding:10px; margin:0 5px; border:none; border-radius:12px; cursor:pointer; background:#cce0ff; color:#0B3D91; font-weight:600; }
+.tab-btn.active { background:#0B3D91; color:#fff; }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  font-size: 16px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition:0.2s;
-}
+.section { display:none; padding:10px; background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:20px; }
 
-button.primary { background:#0B3D91; color:#fff; }
-button.option { background:#cce0ff; color:#0B3D91; }
+button.primary { width:100%; padding:12px; margin:6px 0; border:none; border-radius:12px; background:#0B3D91; color:#fff; cursor:pointer; }
+button.option { flex:1 1 45%; margin:5px 2px; padding:10px; border:none; border-radius:12px; background:#cce0ff; color:#0B3D91; cursor:pointer; }
 
-input[type=date] {
-  padding:10px;
-  font-size:16px;
-  border-radius:12px;
-  border:1px solid #0B3D91;
-  margin:10px 0;
-  width:100%;
-}
+.mood-btns, .symptom-btns { display:flex; flex-wrap:wrap; gap:4px; }
 
-label { font-weight:600; margin-top:10px; display:block; }
-
-.section { margin-bottom:20px; padding:10px; background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
-
-.section h2 { font-size:20px; margin-bottom:10px; color:#0B3D91; }
-
-.mood-btns, .symptom-btns { display:flex; flex-wrap:wrap; gap:8px; }
-
-.symptom-btns button, .mood-btns button { flex:1 1 45%; }
-
-#cycleBar {
-  display:flex;
-  justify-content:space-between;
-  margin: 12px 0;
-  height: 20px;
-  border-radius: 10px;
-  overflow:hidden;
-  background:#fff;
-  border:1px solid #0B3D91;
-}
-
+#cycleBar { display:flex; justify-content:space-between; margin:12px 0; height:20px; border-radius:10px; overflow:hidden; background:#fff; border:1px solid #0B3D91; }
 .day-block { flex:1; }
-
 </style>
 </head>
 <body>
 <div class="container">
+  <h1>روزت چطور بود؟</h1>
 
-  <!-- بخش ثبت احساس -->
-  <div class="section" id="moodSection">
+  <!-- منوی تب‌ها -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="moodSection">حالت</button>
+    <button class="tab-btn" data-tab="needSection">نیاز</button>
+    <button class="tab-btn" data-tab="symptomSection">علائم</button>
+    <button class="tab-btn" data-tab="cycleSection">چرخه</button>
+  </div>
+
+  <!-- بخش‌ها -->
+  <div id="moodSection" class="section" style="display:block;">
     <h2>حالت امروز</h2>
     <div class="mood-btns">
-      <button onclick="setMood('خوب')">🙂 خوبم</button>
-      <button onclick="setMood('خسته')">😐 خسته</button>
-      <button onclick="setMood('حساس')">😔 حساس</button>
+      <button class="option" onclick="setMood('خوب')">🙂 خوبم</button>
+      <button class="option" onclick="setMood('خسته')">😐 خسته</button>
+      <button class="option" onclick="setMood('حساس')">😔 حساس</button>
     </div>
     <p id="moodDisplay">حالت فعلی: -</p>
   </div>
 
-  <!-- بخش نیاز امروز -->
-  <div class="section" id="needSection">
+  <div id="needSection" class="section">
     <h2>نیاز امروز</h2>
     <div class="mood-btns">
-      <button onclick="setNeed('بغل')">🫂 بغلم کنی</button>
-      <button onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
-      <button onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
-      <button onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
-      <button onclick="setNeed('تنهایی')">🕊️ تنها باشم</button>
+      <button class="option" onclick="setNeed('بغل')">🫂 بغلم کنی</button>
+      <button class="option" onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
+      <button class="option" onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
+      <button class="option" onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
+      <button class="option" onclick="setNeed('تنهایی')">🕊️ تنها باشم</button>
     </div>
     <p id="needDisplay">نیاز فعلی: -</p>
   </div>
 
-  <!-- بخش ثبت آخرین پریود -->
-  <div class="section" id="periodSection">
-    <h2>آخرین پریود</h2>
-    <label>تاریخ اولین روز پریود اخیرت (اختیاری)</label>
-    <input type="date" id="lastPeriod">
-    <button class="primary" onclick="savePeriod()">ثبت/ویرایش</button>
-    <p id="nextPeriodDisplay">پریود بعدی: -</p>
-    <p id="nextPMSDisplay">PMS بعدی: -</p>
-  </div>
-
-  <!-- بخش ثبت علائم -->
-  <div class="section" id="symptomSection">
+  <div id="symptomSection" class="section">
     <h2>علائم امروز</h2>
     <div class="symptom-btns">
-      <button onclick="toggleSymptom('خستگی')">😴 خستگی</button>
-      <button onclick="toggleSymptom('درد')">🔥 درد</button>
-      <button onclick="toggleSymptom('خلق و خو')">💭 خلق و خو</button>
-      <button onclick="toggleSymptom('هوس غذایی')">🍫 هوس غذایی</button>
-      <button onclick="toggleSymptom('سردرد')">🤕 سردرد</button>
+      <button class="option" onclick="toggleSymptom('خستگی')">😴 خستگی</button>
+      <button class="option" onclick="toggleSymptom('درد')">🔥 درد</button>
+      <button class="option" onclick="toggleSymptom('خلق و خو')">💭 خلق و خو</button>
+      <button class="option" onclick="toggleSymptom('هوس غذایی')">🍫 هوس غذایی</button>
+      <button class="option" onclick="toggleSymptom('سردرد')">🤕 سردرد</button>
     </div>
+    <label>تاریخ آخرین پریود:</label>
+    <input type="text" id="lastPeriodSh" placeholder="تاریخ شمسی">
+    <button class="primary" onclick="savePeriodSh()">ثبت/ویرایش</button>
     <p id="symptomDisplay">علائم فعلی: -</p>
   </div>
 
-  <!-- بخش چرخه ماه -->
-  <div class="section" id="cycleSection">
+  <div id="cycleSection" class="section">
     <h2>چرخه ماه</h2>
+    <p id="nextPeriodDisplay">پریود بعدی: -</p>
+    <p id="nextPMSDisplay">PMS بعدی: -</p>
     <div id="cycleBar"></div>
   </div>
 
 </div>
 
 <script>
+// مدیریت تب‌ها
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+    document.getElementById(tab).style.display='block';
+  });
+});
+
 let symptoms = JSON.parse(localStorage.getItem('symptoms')||'[]');
 
-// ثبت حالت
-function setMood(mood){
-  localStorage.setItem('mood', mood);
-  updateDisplay();
-}
-
-// ثبت نیاز
-function setNeed(need){
-  localStorage.setItem('need', need);
-  updateDisplay();
-}
-
-// ثبت/ویرایش پریود
-function savePeriod(){
-  const last = document.getElementById('lastPeriod').value;
-  if(last){
-    localStorage.setItem('lastPeriod', last);
-
-    // تاریخ‌ها در تاریخچه
-    let history = JSON.parse(localStorage.getItem('periodHistory')||'[]');
-    if(!history.includes(last)) history.push(last);
-    localStorage.setItem('periodHistory', JSON.stringify(history));
-
-    const cycleLength = history.length>1? averageCycle(history) : 28;
-    const pmsLength = 5;
-
-    const lastDate = new Date(last);
-    const nextPeriod = new Date(lastDate.getTime() + cycleLength*24*60*60*1000);
-    const nextPMSStart = new Date(nextPeriod.getTime() - pmsLength*24*60*60*1000);
-
-    localStorage.setItem('nextPeriod', nextPeriod.toISOString().split('T')[0]);
-    localStorage.setItem('nextPMS', nextPMSStart.toISOString().split('T')[0]);
-  }
-  updateDisplay();
-}
-
-// ثبت/تغییر علائم
+function setMood(mood){ localStorage.setItem('mood', mood); updateDisplay(); }
+function setNeed(need){ localStorage.setItem('need', need); updateDisplay(); }
 function toggleSymptom(sym){
   if(symptoms.includes(sym)) symptoms = symptoms.filter(s=>s!==sym);
   else symptoms.push(sym);
@@ -188,7 +135,38 @@ function toggleSymptom(sym){
   updateDisplay();
 }
 
-// میانگین طول چرخه
+// راه‌اندازی datepicker شمسی
+$(function() {
+  $("#lastPeriodSh").persianDatepicker({
+    format: 'YYYY/MM/DD',
+    autoClose: true
+  });
+});
+
+function savePeriodSh(){
+  let shDate = document.getElementById('lastPeriodSh').value.trim();
+  if(!shDate) return; // اختیاری
+  let [jy,jm,jd] = shDate.split('/').map(Number);
+  let g = jalaali.toGregorian(jy,jm,jd);
+  let lastDate = new Date(g.gy, g.gm-1, g.gd);
+  localStorage.setItem('lastPeriod', lastDate.toISOString().split('T')[0]);
+
+  let history = JSON.parse(localStorage.getItem('periodHistory')||'[]');
+  if(!history.includes(lastDate.toISOString().split('T')[0])) history.push(lastDate.toISOString().split('T')[0]);
+  localStorage.setItem('periodHistory', JSON.stringify(history));
+
+  const cycleLength = history.length>1? averageCycle(history):28;
+  const pmsLength = 5;
+
+  const nextPeriod = new Date(lastDate.getTime() + cycleLength*24*60*60*1000);
+  const nextPMSStart = new Date(nextPeriod.getTime() - pmsLength*24*60*60*1000);
+
+  localStorage.setItem('nextPeriod', nextPeriod.toISOString().split('T')[0]);
+  localStorage.setItem('nextPMS', nextPMSStart.toISOString().split('T')[0]);
+
+  updateDisplay();
+}
+
 function averageCycle(history){
   let total=0;
   for(let i=1;i<history.length;i++){
@@ -199,17 +177,25 @@ function averageCycle(history){
   return Math.round(total/(history.length-1));
 }
 
-// بروزرسانی تمام نمایش‌ها
 function updateDisplay(){
   document.getElementById('moodDisplay').textContent = `حالت فعلی: ${localStorage.getItem('mood')||'-'}`;
   document.getElementById('needDisplay').textContent = `نیاز فعلی: ${localStorage.getItem('need')||'-'}`;
   document.getElementById('symptomDisplay').textContent = `علائم فعلی: ${(JSON.parse(localStorage.getItem('symptoms'))||[]).join(', ')||'-'}`;
-  document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${localStorage.getItem('nextPeriod')||'-'}`;
-  document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${localStorage.getItem('nextPMS')||'-'}`;
+
+  const nextP = localStorage.getItem('nextPeriod');
+  const nextS = localStorage.getItem('nextPMS');
+  if(nextP){
+    const np = jalaali.toJalaali(new Date(nextP));
+    document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${np.jy}/${np.jm}/${np.jd}`;
+  }
+  if(nextS){
+    const ns = jalaali.toJalaali(new Date(nextS));
+    document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${ns.jy}/${ns.jm}/${ns.jd}`;
+  }
+
   drawCycle();
 }
 
-// رسم چرخه ۳۰ روزه
 function drawCycle(){
   const bar = document.getElementById('cycleBar');
   bar.innerHTML='';
@@ -223,15 +209,14 @@ function drawCycle(){
     const div = document.createElement('div');
     div.classList.add('day-block');
 
-    if(nextPMS && nextPeriod && day>=nextPMS && day<nextPeriod) div.style.background='#ffc0cb'; // PMS صورتی
-    else if(nextPeriod && day.toDateString()===nextPeriod.toDateString()) div.style.background='#0B3D91'; // پریود آبی کاربنی
-    else div.style.background='#cce0ff'; // روز عادی آبی روشن
+    if(nextPMS && nextPeriod && day>=nextPMS && day<nextPeriod) div.style.background='#ffc0cb'; 
+    else if(nextPeriod && day.toDateString()===nextPeriod.toDateString()) div.style.background='#0B3D91'; 
+    else div.style.background='#cce0ff'; 
 
     bar.appendChild(div);
   }
 }
 
-// بارگذاری اولیه
 window.addEventListener('load', updateDisplay);
 </script>
 </body>
