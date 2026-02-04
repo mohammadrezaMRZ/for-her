@@ -9,19 +9,19 @@
 
 body {
   font-family: 'Vazirmatn', sans-serif;
-  background: #fdf6f0;
+  background: #ffffff;
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  color: #333;
+  color: #0B3D91;
 }
 
 .container {
   max-width: 400px;
   width: 90%;
-  background: #fff8f2;
+  background: #e6f0ff; /* آبی روشن */
   padding: 30px 20px;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
@@ -30,14 +30,13 @@ body {
 
 h1 {
   font-size: 24px;
-  color: #6a4a3c;
+  color: #0B3D91;
   margin-bottom: 20px;
 }
 
 p {
   font-size: 17px;
   line-height: 1.7;
-  color: #4a3d3c;
   margin: 8px 0;
 }
 </style>
@@ -45,16 +44,18 @@ p {
 <body>
 <div class="container">
   <h1>وضعیت امروز</h1>
-  <p id="mood">-</p>
-  <p id="need">-</p>
+  <p id="moodDisplay">حالت: -</p>
+  <p id="needDisplay">نیاز امروز: -</p>
+  <p id="nextPeriodDisplay">پریود بعدی: -</p>
+  <p id="nextPMSDisplay">PMS بعدی: -</p>
 </div>
 
 <script>
-const mood = localStorage.getItem('mood') || '-';
-const need = localStorage.getItem('need') || '-';
-
-document.getElementById('mood').textContent = `حالت: ${mood}`;
-document.getElementById('need').textContent = `نیاز امروز: ${need}`;
+document.getElementById('moodDisplay').textContent = `حالت: ${localStorage.getItem('mood')||'-'}`;
+document.getElementById('needDisplay').textContent = `نیاز امروز: ${localStorage.getItem('need')||'-'}`;
+document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${localStorage.getItem('nextPeriod')||'-'}`;
+document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${localStorage.getItem('nextPMS')||'-'}`;
 </script>
+
 </body>
 </html>
