@@ -4,48 +4,66 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>برای روزهایی که توضیحش سخته</title>
-
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap');
+
 body {
-  font-family: sans-serif;
-  background: #f6f7f8;
+  font-family: 'Vazirmatn', sans-serif;
+  background: #fdf6f0;
   margin: 0;
   padding: 0;
-  color: #222;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .container {
   max-width: 420px;
-  margin: auto;
-  padding: 40px 20px;
+  width: 90%;
+  padding: 30px 20px;
+  background: #fff8f2;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
 h1 {
-  font-size: 22px;
-  text-align: center;
-  margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 18px;
+  color: #6a4a3c;
 }
 
 p {
-  font-size: 15px;
-  line-height: 1.8;
-  text-align: center;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #4a3d3c;
 }
 
 button {
   width: 100%;
   padding: 14px;
-  margin-top: 12px;
-  font-size: 15px;
+  margin: 10px 0;
+  font-size: 16px;
   border: none;
-  border-radius: 10px;
-  background: #ffffff;
+  border-radius: 12px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button.primary {
-  background: #222;
+  background: #6a4a3c;
   color: #fff;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button.option {
+  background: #ffe8d6;
+  color: #6a4a3c;
 }
 
 .hidden {
@@ -53,39 +71,36 @@ button.primary {
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
   <!-- صفحه ۱ -->
   <div id="step1">
-    <h1>برای روزهایی که توضیح‌دادنش سخته</h1>
+    <h1>برای روزهایی که توضیحش سخته</h1>
     <p>
       لازم نیست توضیح بدی.<br>
       فقط اگه خواستی، بگو امروز چطور کنارت باشم.
     </p>
-    <button class="primary" onclick="nextStep(2)">
-      بگم امروز چطورم
-    </button>
+    <button class="primary" onclick="nextStep(2)">بگم امروز چطورم</button>
   </div>
 
   <!-- صفحه ۲ -->
   <div id="step2" class="hidden">
     <h1>الان بیشتر کدوم حسم؟</h1>
-    <button onclick="setMood('خوب')">🙂 حالم خوبه</button>
-    <button onclick="setMood('خسته')">😐 خسته‌ام</button>
-    <button onclick="setMood('حساس')">😔 حساسم</button>
+    <button class="option" onclick="setMood('خوب')">🙂 حالم خوبه</button>
+    <button class="option" onclick="setMood('خسته')">😐 خسته‌ام</button>
+    <button class="option" onclick="setMood('حساس')">😔 حساسم</button>
   </div>
 
   <!-- صفحه ۳ -->
   <div id="step3" class="hidden">
     <h1>امروز دوست دارم:</h1>
-    <button onclick="setNeed('بغل')">🫂 بغلم کنی</button>
-    <button onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
-    <button onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
-    <button onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
-    <button onclick="setNeed('تنهایی')">🕊️ می‌خوام تنها باشم</button>
+    <button class="option" onclick="setNeed('بغل')">🫂 بغلم کنی</button>
+    <button class="option" onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
+    <button class="option" onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
+    <button class="option" onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
+    <button class="option" onclick="setNeed('تنهایی')">🕊️ می‌خوام تنها باشم</button>
   </div>
 
   <!-- صفحه ۴ -->
@@ -101,8 +116,7 @@ button.primary {
 
 <script>
 function nextStep(step) {
-  document.querySelectorAll('.container > div')
-    .forEach(div => div.classList.add('hidden'));
+  document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
   document.getElementById('step' + step).classList.remove('hidden');
 }
 
