@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وضعیت امروز</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #f6f7f8;
+  color: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  max-width: 400px;
+  background: #fff;
+  padding: 30px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+p {
+  font-size: 17px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>وضعیت امروز</h1>
+  <p id="mood">-</p>
+  <p id="need">-</p>
+</div>
+
+<script>
+const mood = localStorage.getItem('mood') || '-';
+const need = localStorage.getItem('need') || '-';
+
+document.getElementById('mood').textContent = `حالت: ${mood}`;
+document.getElementById('need').textContent = `نیاز امروز: ${need}`;
+</script>
+</body>
+</html>
