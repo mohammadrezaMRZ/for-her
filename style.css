@@ -1,0 +1,22 @@
+body {
+  background:#f5f7fa;
+  font-family: Vazirmatn,sans-serif;
+  display:flex;justify-content:center;align-items:center;height:100vh;margin:0;
+}
+
+.card {
+  background:#fff;border-radius:28px;padding:30px;width:360px;
+  box-shadow:0 15px 35px rgba(0,71,171,.15);text-align:center;
+}
+
+h1 { color:#0B3D91;margin-bottom:15px; }
+
+.tabs { display:flex;margin-bottom:10px; }
+.tab-btn { flex:1;padding:8px;margin:2px;border:none;border-radius:12px;cursor:pointer;background:#edf2f7;color:#718096;font-weight:bold; }
+.tab-btn.active { background:#0B3D91;color:white; }
+
+.section { display:none; }
+.moods button { font-size:26px;margin:6px;padding:10px;border:none;border-radius:14px;cursor:pointer; }
+.moods button.active { border:2px solid #0B3D91;background:#f0f7ff; }
+.save { background:#0B3D91;color:white;border:none;padding:14px;width:100%;border-radius:16px;margin-top:15px; }
+.message { margin-top:15px;font-size:14px;min-height:40px; }
