@@ -1,223 +1,140 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>روزت چطور بود؟</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت وضعیت روزانه</title>
+    <script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-date.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        
+        :root {
+            --primary-blue: #0047AB; /* آبی کاربنی */
+            --bg-light: #f5f7fa;
+            --white: #ffffff;
+            --text-dark: #1A202C;
+            --border: #e2e8f0;
+        }
 
-<!-- jalaali-js برای تبدیل تاریخ شمسی -->
-<script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0; padding: 20px; display: flex; justify-content: center;
+        }
 
-<!-- Persian datepicker -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-date.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+        .container {
+            max-width: 420px; width: 100%; background: var(--white);
+            border-radius: 24px; padding: 25px; box-shadow: 0 10px 25px rgba(0, 71, 171, 0.08);
+        }
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap');
+        h1 { color: var(--primary-blue); text-align: center; font-size: 22px; }
 
-body {
-  font-family: 'Vazirmatn', sans-serif;
-  background: #ffffff;
-  margin:0;
-  color:#0B3D91;
-  display:flex;
-  justify-content:center;
-  padding:20px;
-}
+        /* Tabs */
+        .tabs { display: flex; background: #edf2f7; border-radius: 16px; padding: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; cursor: pointer; background: transparent; color: #718096; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary-blue); color: white; }
 
-.container {
-  max-width: 440px;
-  width: 100%;
-  background: #e6f0ff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
+        .section { display: none; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-h1, h2 { color:#0B3D91; text-align:center; }
+        /* Buttons Grid */
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .option { 
+            padding: 15px 10px; border: 2px solid var(--border); border-radius: 14px; 
+            background: white; color: var(--text-dark); cursor: pointer; font-family: inherit;
+            transition: 0.2s; font-weight: 500;
+        }
+        .option.active { border-color: var(--primary-blue); background: #f0f7ff; color: var(--primary-blue); }
 
-.tabs { display:flex; justify-content:space-around; margin-bottom:15px; }
-.tab-btn { flex:1; padding:10px; margin:0 5px; border:none; border-radius:12px; cursor:pointer; background:#cce0ff; color:#0B3D91; font-weight:600; }
-.tab-btn.active { background:#0B3D91; color:#fff; }
+        input[type="text"] {
+            width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 12px;
+            margin-top: 10px; box-sizing: border-box; text-align: center;
+        }
 
-.section { display:none; padding:10px; background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:20px; }
-
-button.primary { width:100%; padding:12px; margin:6px 0; border:none; border-radius:12px; background:#0B3D91; color:#fff; cursor:pointer; }
-button.option { flex:1 1 45%; margin:5px 2px; padding:10px; border:none; border-radius:12px; background:#cce0ff; color:#0B3D91; cursor:pointer; }
-
-.mood-btns, .symptom-btns { display:flex; flex-wrap:wrap; gap:4px; }
-
-#cycleBar { display:flex; justify-content:space-between; margin:12px 0; height:20px; border-radius:10px; overflow:hidden; background:#fff; border:1px solid #0B3D91; }
-.day-block { flex:1; }
-</style>
+        .primary-btn {
+            width: 100%; background: var(--primary-blue); color: white; border: none;
+            padding: 15px; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer;
+        }
+        
+        #cycleBar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: #eee; margin-top: 15px; }
+        .day-block { flex: 1; border-right: 1px solid #fff; }
+    </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>روزت چطور بود؟</h1>
-
-  <!-- منوی تب‌ها -->
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="moodSection">حالت</button>
-    <button class="tab-btn" data-tab="needSection">نیاز</button>
-    <button class="tab-btn" data-tab="symptomSection">علائم</button>
-    <button class="tab-btn" data-tab="cycleSection">چرخه</button>
-  </div>
-
-  <!-- بخش‌ها -->
-  <div id="moodSection" class="section" style="display:block;">
-    <h2>حالت امروز</h2>
-    <div class="mood-btns">
-      <button class="option" onclick="setMood('خوب')">🙂 خوبم</button>
-      <button class="option" onclick="setMood('خسته')">😐 خسته</button>
-      <button class="option" onclick="setMood('حساس')">😔 حساس</button>
+    <h1>امروز چطوری؟</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('moodSection', this)">حالت</button>
+        <button class="tab-btn" onclick="showTab('needSection', this)">نیاز</button>
+        <button class="tab-btn" onclick="showTab('cycleSection', this)">چرخه</button>
     </div>
-    <p id="moodDisplay">حالت فعلی: -</p>
-  </div>
 
-  <div id="needSection" class="section">
-    <h2>نیاز امروز</h2>
-    <div class="mood-btns">
-      <button class="option" onclick="setNeed('بغل')">🫂 بغلم کنی</button>
-      <button class="option" onclick="setNeed('گوش بده')">🤍 فقط گوش بدی</button>
-      <button class="option" onclick="setNeed('حرف نزنیم')">😶 حرف نزنیم</button>
-      <button class="option" onclick="setNeed('حواسمو پرت کن')">😄 حواسمو پرت کنی</button>
-      <button class="option" onclick="setNeed('تنهایی')">🕊️ تنها باشم</button>
+    <div id="moodSection" class="section" style="display:block;">
+        <div class="grid-options" id="moodOptions">
+            <button class="option" onclick="selectSingle(this, 'mood', 'خوب')">🙂 خوبم</button>
+            <button class="option" onclick="selectSingle(this, 'mood', 'خسته')">😐 خسته</button>
+            <button class="option" onclick="selectSingle(this, 'mood', 'حساس')">😔 حساس</button>
+            <button class="option" onclick="selectSingle(this, 'mood', 'عصبی')">😠 عصبی</button>
+        </div>
     </div>
-    <p id="needDisplay">نیاز فعلی: -</p>
-  </div>
 
-  <div id="symptomSection" class="section">
-    <h2>علائم امروز</h2>
-    <div class="symptom-btns">
-      <button class="option" onclick="toggleSymptom('خستگی')">😴 خستگی</button>
-      <button class="option" onclick="toggleSymptom('درد')">🔥 درد</button>
-      <button class="option" onclick="toggleSymptom('خلق و خو')">💭 خلق و خو</button>
-      <button class="option" onclick="toggleSymptom('هوس غذایی')">🍫 هوس غذایی</button>
-      <button class="option" onclick="toggleSymptom('سردرد')">🤕 سردرد</button>
+    <div id="needSection" class="section">
+        <div class="grid-options" id="needOptions">
+            <button class="option" onclick="selectSingle(this, 'need', 'بغل')">🫂 بغل</button>
+            <button class="option" onclick="selectSingle(this, 'need', 'گوش بده')">🤍 حرف زدن</button>
+            <button class="option" onclick="selectSingle(this, 'need', 'سکوت')">😶 سکوت</button>
+            <button class="option" onclick="selectSingle(this, 'need', 'تنهایی')">🕊️ تنهایی</button>
+        </div>
     </div>
-    <label>تاریخ آخرین پریود:</label>
-    <input type="text" id="lastPeriodSh" placeholder="تاریخ شمسی">
-    <button class="primary" onclick="savePeriodSh()">ثبت/ویرایش</button>
-    <p id="symptomDisplay">علائم فعلی: -</p>
-  </div>
 
-  <div id="cycleSection" class="section">
-    <h2>چرخه ماه</h2>
-    <p id="nextPeriodDisplay">پریود بعدی: -</p>
-    <p id="nextPMSDisplay">PMS بعدی: -</p>
-    <div id="cycleBar"></div>
-  </div>
-
+    <div id="cycleSection" class="section">
+        <label style="font-size: 14px; color: #718096;">تاریخ آخرین شروع قاعدگی:</label>
+        <input type="text" id="datepicker" placeholder="انتخاب تاریخ">
+        <button class="primary-btn" onclick="savePeriod()">ثبت و محاسبه</button>
+        <div id="cycleBar"></div>
+        <p id="nextPredict" style="font-size: 13px; text-align: center; color: #4a5568; margin-top: 10px;"></p>
+    </div>
 </div>
 
 <script>
-// مدیریت تب‌ها
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.getAttribute('data-tab');
-    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-    document.getElementById(tab).style.display='block';
-  });
-});
+    function showTab(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).style.display = 'block';
+        btn.classList.add('active');
+    }
 
-let symptoms = JSON.parse(localStorage.getItem('symptoms')||'[]');
+    function selectSingle(btn, key, value) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+        btn.classList.add('active');
+        localStorage.setItem(key, value);
+    }
 
-function setMood(mood){ localStorage.setItem('mood', mood); updateDisplay(); }
-function setNeed(need){ localStorage.setItem('need', need); updateDisplay(); }
-function toggleSymptom(sym){
-  if(symptoms.includes(sym)) symptoms = symptoms.filter(s=>s!==sym);
-  else symptoms.push(sym);
-  localStorage.setItem('symptoms', JSON.stringify(symptoms));
-  updateDisplay();
-}
+    $(document).ready(function() {
+        $("#datepicker").persianDatepicker({ format: 'YYYY/MM/DD', autoClose: true });
+    });
 
-// راه‌اندازی datepicker شمسی
-$(function() {
-  $("#lastPeriodSh").persianDatepicker({
-    format: 'YYYY/MM/DD',
-    autoClose: true
-  });
-});
-
-function savePeriodSh(){
-  let shDate = document.getElementById('lastPeriodSh').value.trim();
-  if(!shDate) return; // اختیاری
-  let [jy,jm,jd] = shDate.split('/').map(Number);
-  let g = jalaali.toGregorian(jy,jm,jd);
-  let lastDate = new Date(g.gy, g.gm-1, g.gd);
-  localStorage.setItem('lastPeriod', lastDate.toISOString().split('T')[0]);
-
-  let history = JSON.parse(localStorage.getItem('periodHistory')||'[]');
-  if(!history.includes(lastDate.toISOString().split('T')[0])) history.push(lastDate.toISOString().split('T')[0]);
-  localStorage.setItem('periodHistory', JSON.stringify(history));
-
-  const cycleLength = history.length>1? averageCycle(history):28;
-  const pmsLength = 5;
-
-  const nextPeriod = new Date(lastDate.getTime() + cycleLength*24*60*60*1000);
-  const nextPMSStart = new Date(nextPeriod.getTime() - pmsLength*24*60*60*1000);
-
-  localStorage.setItem('nextPeriod', nextPeriod.toISOString().split('T')[0]);
-  localStorage.setItem('nextPMS', nextPMSStart.toISOString().split('T')[0]);
-
-  updateDisplay();
-}
-
-function averageCycle(history){
-  let total=0;
-  for(let i=1;i<history.length;i++){
-    let d1=new Date(history[i-1]);
-    let d2=new Date(history[i]);
-    total += (d2-d1)/(1000*60*60*24);
-  }
-  return Math.round(total/(history.length-1));
-}
-
-function updateDisplay(){
-  document.getElementById('moodDisplay').textContent = `حالت فعلی: ${localStorage.getItem('mood')||'-'}`;
-  document.getElementById('needDisplay').textContent = `نیاز فعلی: ${localStorage.getItem('need')||'-'}`;
-  document.getElementById('symptomDisplay').textContent = `علائم فعلی: ${(JSON.parse(localStorage.getItem('symptoms'))||[]).join(', ')||'-'}`;
-
-  const nextP = localStorage.getItem('nextPeriod');
-  const nextS = localStorage.getItem('nextPMS');
-  if(nextP){
-    const np = jalaali.toJalaali(new Date(nextP));
-    document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${np.jy}/${np.jm}/${np.jd}`;
-  }
-  if(nextS){
-    const ns = jalaali.toJalaali(new Date(nextS));
-    document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${ns.jy}/${ns.jm}/${ns.jd}`;
-  }
-
-  drawCycle();
-}
-
-function drawCycle(){
-  const bar = document.getElementById('cycleBar');
-  bar.innerHTML='';
-  const today = new Date();
-  const nextPeriod = localStorage.getItem('nextPeriod')? new Date(localStorage.getItem('nextPeriod')) : null;
-  const nextPMS = localStorage.getItem('nextPMS')? new Date(localStorage.getItem('nextPMS')) : null;
-
-  for(let i=0;i<30;i++){
-    const day = new Date();
-    day.setDate(today.getDate()+i);
-    const div = document.createElement('div');
-    div.classList.add('day-block');
-
-    if(nextPMS && nextPeriod && day>=nextPMS && day<nextPeriod) div.style.background='#ffc0cb'; 
-    else if(nextPeriod && day.toDateString()===nextPeriod.toDateString()) div.style.background='#0B3D91'; 
-    else div.style.background='#cce0ff'; 
-
-    bar.appendChild(div);
-  }
-}
-
-window.addEventListener('load', updateDisplay);
+    function savePeriod() {
+        let shDate = document.getElementById('datepicker').value;
+        if(!shDate) return;
+        let [jy,jm,jd] = shDate.split('/').map(Number);
+        let g = jalaali.toGregorian(jy,jm,jd);
+        let lastDate = new Date(g.gy, g.gm-1, g.gd);
+        
+        localStorage.setItem('lastPeriod', lastDate.toISOString().split('T')[0]);
+        
+        // محاسبه پیش‌فرض ۲۸ روزه
+        let nextP = new Date(lastDate.getTime() + 28*24*60*60*1000);
+        localStorage.setItem('nextPeriod', nextP.toISOString().split('T')[0]);
+        alert("اطلاعات ذخیره شد.");
+    }
 </script>
 </body>
 </html>
