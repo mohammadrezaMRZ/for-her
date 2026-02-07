@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت وضعیت - غزلیلی</title>
+    <title>پنل ثبت وضعیت - غزلیلی</title>
     
     <script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
@@ -15,7 +15,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
         
         :root {
-            --primary: #0047AB; 
+            --primary: #0047AB; /* آبی کاربنی */
             --bg: #f5f7fa;
             --white: #ffffff;
             --text: #1A202C;
@@ -46,7 +46,7 @@
         .option { 
             padding: 15px 8px; border: 2px solid var(--border); border-radius: 14px; 
             background: white; color: var(--text); cursor: pointer; font-family: inherit;
-            transition: 0.2s; font-weight: 500;
+            transition: 0.2s; font-weight: 500; text-align: center;
         }
         .option.active { border-color: var(--primary); background: #f0f7ff; color: var(--primary); }
 
@@ -58,7 +58,9 @@
         .primary-btn {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 16px; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer;
+            transition: 0.3s;
         }
+        .primary-btn:active { transform: scale(0.98); }
 
         #status-msg { 
             text-align: center; color: #2dce89; font-weight: bold; margin-top: 15px; 
@@ -88,16 +90,16 @@
 
     <div id="symptomSection" class="section">
         <div class="grid-options">
-            <button class="option" onclick="toggleMulti(this, 'خستگی')">😴 خستگی</button>
-            <button class="option" onclick="toggleMulti(this, 'درد')">🔥 درد</button>
-            <button class="option" onclick="toggleMulti(this, 'سردرد')">🤕 سردرد</button>
-            <button class="option" onclick="toggleMulti(this, 'هوس غذایی')">🍫 هوس غذایی</button>
+            <button class="option" onclick="toggleMulti(this, '😴 خستگی')">😴 خستگی</button>
+            <button class="option" onclick="toggleMulti(this, '🔥 درد')">🔥 درد</button>
+            <button class="option" onclick="toggleMulti(this, '🤕 سردرد')">🤕 سردرد</button>
+            <button class="option" onclick="toggleMulti(this, '🍫 هوس')">🍫 هوس</button>
         </div>
     </div>
 
     <div id="cycleSection" class="section">
-        <label style="font-size: 13px; color: #718096;">تاریخ شروع آخرین پریود:</label>
-        <input type="text" id="datepicker" placeholder="انتخاب تاریخ" readonly>
+        <label style="font-size: 13px; color: #718096;">تاریخ آخرین شروع قاعدگی:</label>
+        <input type="text" id="datepicker" placeholder="--- انتخاب تاریخ ---" readonly>
         <button class="primary-btn" onclick="saveAll()">ثبت اطلاعات</button>
         <div id="status-msg"></div>
     </div>
@@ -133,7 +135,16 @@
         $("#datepicker").persianDatepicker({
             format: 'YYYY/MM/DD',
             autoClose: true,
-            calendar: { persian: { fillDate: true } }
+            initialValue: false
+        });
+        
+        // لود کردن وضعیت دکمه‌ها از قبل
+        const currentMood = localStorage.getItem('mood');
+        if(currentMood) {
+            $(".option:contains('"+currentMood+"')").addClass('active');
+        }
+        selectedSymptoms.forEach(s => {
+            $(".option:contains('"+s+"')").addClass('active');
         });
     });
 
@@ -143,15 +154,23 @@
             let [jy,jm,jd] = dateStr.split('/').map(Number);
             let g = jalaali.toGregorian(jy,jm,jd);
             let lastDate = new Date(g.gy, g.gm-1, g.gd);
+            
+            // محاسبه ۲۸ روز بعد برای پریود بعدی
             let nextP = new Date(lastDate.getTime() + 28*24*60*60*1000);
             let nextJ = jalaali.toJalaali(nextP.getFullYear(), nextP.getMonth()+1, nextP.getDate());
-            localStorage.setItem('nextPeriod', `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`);
+            
+            let formattedNext = `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`;
+            localStorage.setItem('nextPeriod', formattedNext);
         }
-        
+
+        // نمایش پیام درخواستی شما
         const msg = document.getElementById('status-msg');
-        msg.textContent = "ثبت شد غزلیلییی من ✅";
+        msg.textContent = "ثبت شد غزلیلییی ممرییی ✅";
         msg.style.display = 'block';
-        setTimeout(() => { msg.style.display = 'none'; }, 2500);
+        
+        setTimeout(() => {
+            msg.style.display = 'none';
+        }, 3000);
     }
 </script>
 </body>
