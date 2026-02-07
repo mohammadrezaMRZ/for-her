@@ -1,145 +1,102 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Period and Mood Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/persian-datepicker/1.0.0/css/persian-datepicker.min.css">
+    <title>ثبت وضعیت - غزلیلی</title>
+    <script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
     <style>
-        body {
-            background-color: #F5F7FA;
-            font-family: 'Vazirmatn', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            max-width: 400px;
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .tab {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .tab button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-        }
-        .active {
-            color: #0047AB;
-            font-weight: bold;
-        }
-        .mood-buttons, .symptom-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .mood-buttons button, .symptom-buttons button {
-            border: 2px solid #0047AB;
-            border-radius: 28px;
-            background: white;
-            padding: 10px;
-            cursor: pointer;
-        }
-        .mood-buttons button.selected {
-            background: #0047AB;
-            color: white;
-        }
-        .primary-button {
-            background: #0047AB;
-            color: white;
-            border: none;
-            border-radius: 28px;
-            padding: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .success-message {
-            display: none;
-            color: green;
-            text-align: center;
-            margin-top: 10px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        :root { --primary: #0047AB; --bg: #f5f7fa; --text: #1A202C; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .container { max-width: 400px; width: 100%; background: #fff; border-radius: 28px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h1 { color: var(--primary); text-align: center; font-size: 22px; }
+        .tabs { display: flex; background: #edf2f7; border-radius: 16px; padding: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; cursor: pointer; background: transparent; color: #718096; font-weight: bold; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .section { display: none; }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .option { padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; background: white; cursor: pointer; font-family: inherit; transition: 0.2s; }
+        .option.active { border-color: var(--primary); background: #f0f7ff; color: var(--primary); }
+        input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; margin-top: 10px; box-sizing: border-box; text-align: center; font-family: inherit; }
+        .primary-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        #status-msg { text-align: center; color: #2dce89; font-weight: bold; margin-top: 15px; font-size: 16px; min-height: 24px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="tab">
-            <button class="active" onclick="showTab('mood')">حالت</button>
-            <button onclick="showTab('symptoms')">علائم</button>
-            <button onclick="showTab('cycle')">چرخه</button>
-        </div>
-        <div id="mood" class="tab-content">
-            <div class="mood-buttons">
-                <button onclick="selectMood('good')">🙂 خوبم</button>
-                <button onclick="selectMood('tired')">😐 خسته</button>
-                <button onclick="selectMood('sensitive')">😔 حساس</button>
-                <button onclick="selectMood('nervous')">😠 عصبی</button>
-            </div>
-        </div>
-        <div id="symptoms" class="tab-content" style="display:none;">
-            <div class="symptom-buttons">
-                <button onclick="toggleSymptom('fatigue')">😴 خستگی</button>
-                <button onclick="toggleSymptom('pain')">🔥 درد</button>
-                <button onclick="toggleSymptom('headache')">🤕 سردرد</button>
-                <button onclick="toggleSymptom('craving')">🍫 هوس</button>
-            </div>
-        </div>
-        <div id="cycle" class="tab-content" style="display:none;">
-            <input type="text" id="lastPeriod" class="persian-datepicker" placeholder="تاریخ آخرین قاعدگی">
-        </div>
-        <button class="primary-button" onclick="saveData()">ثبت اطلاعات</button>
-        <div class="success-message" id="successMessage">ثبت شد غزلیلییی ممرییی ✅</div>
+<div class="container">
+    <h1>امروز چطوری؟</h1>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('moodSection', this)">حالت</button>
+        <button class="tab-btn" onclick="showTab('symptomSection', this)">علائم</button>
+        <button class="tab-btn" onclick="showTab('cycleSection', this)">چرخه</button>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jalaali-js/1.0.0/jalaali.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/persian-datepicker/1.0.0/js/persian-datepicker.min.js"></script>
-    <script>
-        let selectedMood = '';
-        let selectedSymptoms = [];
+    <div id="moodSection" class="section" style="display:block;">
+        <div class="grid-options">
+            <button class="option" onclick="selectSingle(this, 'mood', '🙂 خوبم')">🙂 خوبم</button>
+            <button class="option" onclick="selectSingle(this, 'mood', '😐 خسته')">😐 خسته</button>
+            <button class="option" onclick="selectSingle(this, 'mood', '😔 حساس')">😔 حساس</button>
+            <button class="option" onclick="selectSingle(this, 'mood', '😠 عصبی')">😠 عصبی</button>
+        </div>
+    </div>
+    <div id="symptomSection" class="section">
+        <div class="grid-options">
+            <button class="option" onclick="toggleMulti(this, '😴 خستگی')">😴 خستگی</button>
+            <button class="option" onclick="toggleMulti(this, '🔥 درد')">🔥 درد</button>
+            <button class="option" onclick="toggleMulti(this, '🤕 سردرد')">🤕 سردرد</button>
+            <button class="option" onclick="toggleMulti(this, '🍫 هوس')">🍫 هوس</button>
+        </div>
+    </div>
+    <div id="cycleSection" class="section">
+        <input type="text" id="datepicker" placeholder="انتخاب تاریخ آخرین پریود" readonly>
+        <button class="primary-btn" onclick="saveAll()">ثبت اطلاعات</button>
+        <div id="status-msg"></div>
+    </div>
+</div>
 
-        $(document).ready(function() {
-            $('.persian-datepicker').persianDatepicker();
-        });
-
-        function showTab(tab) {
-            $('.tab-content').hide();
-            $('#' + tab).show();
-            $('.tab button').removeClass('active');
-            $('.tab button:contains(' + tab + ')').addClass('active');
+<script>
+    let selectedSymptoms = [];
+    function showTab(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).style.display = 'block';
+        btn.classList.add('active');
+    }
+    function selectSingle(btn, key, value) {
+        btn.parentElement.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+        btn.classList.add('active');
+        localStorage.setItem(key, value);
+    }
+    function toggleMulti(btn, value) {
+        btn.classList.toggle('active');
+        if (selectedSymptoms.includes(value)) { 
+            selectedSymptoms = selectedSymptoms.filter(s => s !== value); 
+        } else { 
+            selectedSymptoms.push(value); 
         }
-
-        function selectMood(mood) {
-            selectedMood = mood;
-            $('.mood-buttons button').removeClass('selected');
-            $('.mood-buttons button:contains(' + mood + ')').addClass('selected');
+        localStorage.setItem('symptoms', JSON.stringify(selectedSymptoms));
+    }
+    $(document).ready(function() {
+        $("#datepicker").persianDatepicker({ format: 'YYYY/MM/DD', autoClose: true });
+    });
+    function saveAll() {
+        const dateStr = document.getElementById('datepicker').value;
+        if(dateStr) {
+            let [jy,jm,jd] = dateStr.split('/').map(Number);
+            let g = jalaali.toGregorian(jy,jm,jd);
+            let lastDate = new Date(g.gy, g.gm-1, g.gd);
+            let nextP = new Date(lastDate.getTime() + 28*24*60*60*1000);
+            let nextJ = jalaali.toJalaali(nextP.getFullYear(), nextP.getMonth()+1, nextP.getDate());
+            localStorage.setItem('nextPeriod', `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`);
         }
-
-        function toggleSymptom(symptom) {
-            if (selectedSymptoms.includes(symptom)) {
-                selectedSymptoms = selectedSymptoms.filter(s => s !== symptom);
-            } else {
-                selectedSymptoms.push(symptom);
-            }
-        }
-
-        function saveData() {
-            const lastPeriodDate = $('#lastPeriod').val();
-            const nextPeriodDate = new Date(new Date(lastPeriodDate).getTime() + 28 * 24 * 60 * 60 * 1000);
-            localStorage.setItem('mood', selectedMood);
-            localStorage.setItem('symptoms', JSON.stringify(selectedSymptoms));
-            localStorage.setItem('nextPeriod', nextPeriodDate.toLocaleDateString('fa-IR'));
-            $('#successMessage').fadeIn().delay(3000).fadeOut();
-        }
-    </script>
+        const msg = document.getElementById('status-msg');
+        msg.textContent = "ثبت شد غزلیلیی ممرییی ✅";
+        setTimeout(() => { msg.textContent = ""; }, 3000);
+    }
+</script>
 </body>
 </html>
