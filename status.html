@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وضعیت امروز</title>
+    <title>وضعیت غزلیلی</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
         body {
@@ -13,48 +13,55 @@
             height: 100vh; margin: 0;
         }
         .status-card {
-            width: 320px; background: white; border-radius: 24px;
+            width: 330px; background: white; border-radius: 28px;
             padding: 30px; box-shadow: 0 15px 35px rgba(0, 71, 171, 0.1);
             text-align: center;
         }
         .header { color: #0047AB; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
-        .data-row { 
-            display: flex; justify-content: space-between; padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0; 
-        }
+        .data-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f4f8; }
         .label { color: #718096; font-size: 14px; }
         .value { color: #1A202C; font-weight: bold; }
-        .cycle-info {
-            margin-top: 20px; background: #f0f7ff;
-            padding: 15px; border-radius: 15px; color: #0047AB; font-size: 14px;
+        .badge-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; justify-content: flex-end; }
+        .badge { background: #f0f7ff; color: #0047AB; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; }
+        .cycle-box {
+            margin-top: 25px; background: #0047AB;
+            padding: 15px; border-radius: 20px; color: white;
         }
+        .cycle-box div { font-size: 12px; opacity: 0.8; }
+        .cycle-box strong { font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="status-card">
-    <div class="header">خلاصه وضعیت</div>
-    
+    <div class="header">وضعیت امروز غزلیلی 🌸</div>
     <div class="data-row">
         <span class="label">حالت روحی:</span>
         <span class="value" id="m-val">-</span>
     </div>
-    <div class="data-row">
-        <span class="label">نیاز من:</span>
-        <span class="value" id="n-val">-</span>
+    <div style="text-align: right; padding-top: 10px;">
+        <span class="label">علائم:</span>
+        <div class="badge-container" id="s-list"></div>
     </div>
-    
-    <div class="cycle-info">
-        موعد بعدی: <br>
-        <strong id="p-val">-</strong>
+    <div class="cycle-box">
+        <div>موعد بعدی (تخمینی):</div>
+        <strong id="p-val">ثبت نشده</strong>
     </div>
 </div>
 
 <script>
     document.getElementById('m-val').textContent = localStorage.getItem('mood') || 'ثبت نشده';
-    document.getElementById('n-val').textContent = localStorage.getItem('need') || 'ثبت نشده';
-    document.getElementById('p-val').textContent = localStorage.getItem('nextPeriod') || '-';
+    document.getElementById('p-val').textContent = localStorage.getItem('nextPeriod') || 'ثبت نشده';
+    const symptoms = JSON.parse(localStorage.getItem('symptoms') || '[]');
+    const container = document.getElementById('s-list');
+    if(symptoms.length > 0) {
+        symptoms.forEach(s => {
+            const span = document.createElement('span');
+            span.className = 'badge';
+            span.textContent = s;
+            container.appendChild(span);
+        });
+    } else { container.innerHTML = '<span style="color:#cbd5e0; font-size:12px;">بدون علامت</span>'; }
 </script>
-
 </body>
 </html>
