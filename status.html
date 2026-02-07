@@ -1,41 +1,74 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وضعیت غزلیلی</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
-        body { font-family: 'Vazirmatn', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .status-card { width: 330px; background: white; border-radius: 28px; padding: 30px; box-shadow: 0 15px 35px rgba(0, 71, 171, 0.1); text-align: center; }
-        .header { color: #0047AB; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
-        .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f4f8; }
-        .label { color: #718096; font-size: 14px; }
-        .value { color: #1A202C; font-weight: bold; }
-        .badge { background: #f0f7ff; color: #0047AB; padding: 3px 8px; border-radius: 8px; font-size: 11px; margin: 2px; display: inline-block; }
-        .cycle { margin-top: 25px; background: #0047AB; padding: 15px; border-radius: 20px; color: white; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وضعیت غزلیلی</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<div class="card">
+  <h1>خلاصه وضعیت غزلیلی 🌸</h1>
 
-<div class="status-card">
-    <div class="header">خلاصه وضعیت غزلیلی 🌸</div>
-    <div class="row"><span class="label">حالت:</span><span class="value" id="m-out">-</span></div>
-    <div style="text-align: right; padding: 10px 0;"><span class="label">علائم:</span><div id="s-out"></div></div>
-    <div class="cycle"><div>موعد بعدی (تقریبی):</div><strong id="p-out">ثبت نشده</strong></div>
+  <div class="row">
+    <span class="label">حالت:</span>
+    <span class="value" id="m-out">-</span>
+  </div>
+
+  <div class="row" style="flex-direction:column;align-items:flex-end;">
+    <span class="label">علائم:</span>
+    <div id="s-out" style="margin-top:5px;"></div>
+  </div>
+
+  <div class="cycle">
+    <div>موعد بعدی (تقریبی):</div>
+    <strong id="p-out">ثبت نشده</strong>
+  </div>
+
+  <div style="margin-top:20px;">
+    <canvas id="moodChartStatus"></canvas>
+  </div>
 </div>
 
 <script>
-    function refresh() {
-        document.getElementById('m-out').textContent = localStorage.getItem('savedMood') || 'ثبت نشده';
-        document.getElementById('p-out').textContent = localStorage.getItem('savedNextPeriod') || 'نامشخص';
-        const syms = JSON.parse(localStorage.getItem('savedSymptoms') || '[]');
-        document.getElementById('s-out').innerHTML = syms.length > 0 ? syms.map(s => `<span class="badge">${s}</span>`).join('') : '---';
+function refreshStatus(){
+  const mood = localStorage.getItem("savedMood") || "ثبت نشده";
+  document.getElementById("m-out").textContent = mood;
+
+  const syms = JSON.parse(localStorage.getItem("savedSymptoms")||"[]");
+  document.getElementById("s-out").innerHTML = syms.length>0 ? syms.map(s=>`<span class="badge">${s}</span>`).join('') : "---";
+
+  document.getElementById("p-out").textContent = localStorage.getItem("savedNextPeriod")||"نامشخص";
+
+  // نمودار ماهانه
+  const data = JSON.parse(localStorage.getItem("moods")||"[]");
+  const labels = data.map(d=>d.date);
+  const moods = data.map(d=>d.mood);
+
+  const ctx = document.getElementById("moodChartStatus").getContext("2d");
+  if(window.chartStatus) window.chartStatus.destroy();
+  window.chartStatus = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:labels,
+      datasets:[{
+        label:'احساس ماهانه',
+        data:moods,
+        borderColor:'#0B3D91',
+        tension:0.3,
+        fill:false
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{ y:{min:1,max:5,ticks:{stepSize:1}} }
     }
-    
-    // اجرای لحظه‌ای و آپدیت خودکار
-    refresh();
-    setInterval(refresh, 1000); 
+  });
+}
+
+window.addEventListener("load",refreshStatus);
+setInterval(refreshStatus,1000);
 </script>
 </body>
 </html>
