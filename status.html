@@ -1,60 +1,59 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>وضعیت امروز</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap');
-
-body {
-  font-family: 'Vazirmatn', sans-serif;
-  background: #ffffff;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  color: #0B3D91;
-}
-
-.container {
-  max-width: 400px;
-  width: 90%;
-  background: #e6f0ff; /* آبی روشن */
-  padding: 30px 20px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-h1 {
-  font-size: 24px;
-  color: #0B3D91;
-  margin-bottom: 20px;
-}
-
-p {
-  font-size: 17px;
-  line-height: 1.7;
-  margin: 8px 0;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وضعیت امروز</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: #f5f7fa;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0;
+        }
+        .status-card {
+            width: 320px; background: white; border-radius: 24px;
+            padding: 30px; box-shadow: 0 15px 35px rgba(0, 71, 171, 0.1);
+            text-align: center;
+        }
+        .header { color: #0047AB; font-size: 20px; margin-bottom: 25px; font-weight: bold; }
+        .data-row { 
+            display: flex; justify-content: space-between; padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0; 
+        }
+        .label { color: #718096; font-size: 14px; }
+        .value { color: #1A202C; font-weight: bold; }
+        .cycle-info {
+            margin-top: 20px; background: #f0f7ff;
+            padding: 15px; border-radius: 15px; color: #0047AB; font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>وضعیت امروز</h1>
-  <p id="moodDisplay">حالت: -</p>
-  <p id="needDisplay">نیاز امروز: -</p>
-  <p id="nextPeriodDisplay">پریود بعدی: -</p>
-  <p id="nextPMSDisplay">PMS بعدی: -</p>
+
+<div class="status-card">
+    <div class="header">خلاصه وضعیت</div>
+    
+    <div class="data-row">
+        <span class="label">حالت روحی:</span>
+        <span class="value" id="m-val">-</span>
+    </div>
+    <div class="data-row">
+        <span class="label">نیاز من:</span>
+        <span class="value" id="n-val">-</span>
+    </div>
+    
+    <div class="cycle-info">
+        موعد بعدی: <br>
+        <strong id="p-val">-</strong>
+    </div>
 </div>
 
 <script>
-document.getElementById('moodDisplay').textContent = `حالت: ${localStorage.getItem('mood')||'-'}`;
-document.getElementById('needDisplay').textContent = `نیاز امروز: ${localStorage.getItem('need')||'-'}`;
-document.getElementById('nextPeriodDisplay').textContent = `پریود بعدی: ${localStorage.getItem('nextPeriod')||'-'}`;
-document.getElementById('nextPMSDisplay').textContent = `PMS بعدی: ${localStorage.getItem('nextPMS')||'-'}`;
+    document.getElementById('m-val').textContent = localStorage.getItem('mood') || 'ثبت نشده';
+    document.getElementById('n-val').textContent = localStorage.getItem('need') || 'ثبت نشده';
+    document.getElementById('p-val').textContent = localStorage.getItem('nextPeriod') || '-';
 </script>
 
 </body>
