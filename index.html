@@ -15,7 +15,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
         
         :root {
-            --primary: #0047AB; /* آبی کاربنی */
+            --primary: #0047AB; 
             --bg: #f5f7fa;
             --white: #ffffff;
             --text: #1A202C;
@@ -29,13 +29,12 @@
         }
 
         .container {
-            max-width: 420px; width: 100%; background: var(--white);
-            border-radius: 24px; padding: 25px; box-shadow: 0 10px 25px rgba(0, 71, 171, 0.08);
+            max-width: 400px; width: 100%; background: var(--white);
+            border-radius: 28px; padding: 25px; box-shadow: 0 10px 25px rgba(0, 71, 171, 0.08);
         }
 
         h1 { color: var(--primary); text-align: center; font-size: 22px; margin-bottom: 20px; }
 
-        /* طراحی تب‌ها */
         .tabs { display: flex; background: #edf2f7; border-radius: 16px; padding: 5px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; cursor: pointer; background: transparent; color: #718096; font-weight: bold; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: white; }
@@ -43,12 +42,11 @@
         .section { display: none; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* دکمه‌ها */
         .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .option { 
             padding: 15px 8px; border: 2px solid var(--border); border-radius: 14px; 
             background: white; color: var(--text); cursor: pointer; font-family: inherit;
-            transition: 0.2s; font-weight: 500; text-align: center;
+            transition: 0.2s; font-weight: 500;
         }
         .option.active { border-color: var(--primary); background: #f0f7ff; color: var(--primary); }
 
@@ -60,13 +58,11 @@
         .primary-btn {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 16px; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer;
-            transition: 0.3s;
         }
-        .primary-btn:active { transform: scale(0.98); }
 
         #status-msg { 
-            text-align: center; color: #2dce89; font-weight: bold; margin-top: 10px; 
-            display: none; transition: 0.3s;
+            text-align: center; color: #2dce89; font-weight: bold; margin-top: 15px; 
+            display: none; font-size: 15px;
         }
     </style>
 </head>
@@ -91,7 +87,7 @@
     </div>
 
     <div id="symptomSection" class="section">
-        <div class="grid-options" id="symptomContainer">
+        <div class="grid-options">
             <button class="option" onclick="toggleMulti(this, 'خستگی')">😴 خستگی</button>
             <button class="option" onclick="toggleMulti(this, 'درد')">🔥 درد</button>
             <button class="option" onclick="toggleMulti(this, 'سردرد')">🤕 سردرد</button>
@@ -100,15 +96,15 @@
     </div>
 
     <div id="cycleSection" class="section">
-        <label style="font-size: 14px; color: #718096; margin-right: 5px;">تاریخ آخرین شروع قاعدگی:</label>
-        <input type="text" id="datepicker" placeholder="--- انتخاب تاریخ ---" readonly>
+        <label style="font-size: 13px; color: #718096;">تاریخ شروع آخرین پریود:</label>
+        <input type="text" id="datepicker" placeholder="انتخاب تاریخ" readonly>
         <button class="primary-btn" onclick="saveAll()">ثبت اطلاعات</button>
-        <div id="status-msg">ثبت شد ✅</div>
+        <div id="status-msg"></div>
     </div>
 </div>
 
 <script>
-    let selectedSymptoms = [];
+    let selectedSymptoms = JSON.parse(localStorage.getItem('symptoms') || '[]');
 
     function showTab(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
@@ -117,15 +113,12 @@
         btn.classList.add('active');
     }
 
-    // انتخاب تک‌گزینه‌ای (برای حالت)
     function selectSingle(btn, key, value) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+        btn.parentElement.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
         btn.classList.add('active');
         localStorage.setItem(key, value);
     }
 
-    // انتخاب چندگزینه‌ای (برای علائم)
     function toggleMulti(btn, value) {
         btn.classList.toggle('active');
         if (selectedSymptoms.includes(value)) {
@@ -136,15 +129,11 @@
         localStorage.setItem('symptoms', JSON.stringify(selectedSymptoms));
     }
 
-    // فعال‌سازی تقویم شمسی
     $(document).ready(function() {
         $("#datepicker").persianDatepicker({
             format: 'YYYY/MM/DD',
             autoClose: true,
-            initialValue: false,
-            calendar:{
-                persian: { fillDate: true }
-            }
+            calendar: { persian: { fillDate: true } }
         });
     });
 
@@ -154,21 +143,15 @@
             let [jy,jm,jd] = dateStr.split('/').map(Number);
             let g = jalaali.toGregorian(jy,jm,jd);
             let lastDate = new Date(g.gy, g.gm-1, g.gd);
-            
-            localStorage.setItem('lastPeriod', dateStr); // ذخیره تاریخ شمسی برای نمایش راحت‌تر
-            
-            // محاسبه تخمینی پریود بعدی (۲۸ روز بعد)
             let nextP = new Date(lastDate.getTime() + 28*24*60*60*1000);
             let nextJ = jalaali.toJalaali(nextP.getFullYear(), nextP.getMonth()+1, nextP.getDate());
             localStorage.setItem('nextPeriod', `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`);
         }
-
-        // نمایش پیام "ثبت شد"
+        
         const msg = document.getElementById('status-msg');
+        msg.textContent = "ثبت شد غزلیلییی من ✅";
         msg.style.display = 'block';
-        setTimeout(() => {
-            msg.style.display = 'none';
-        }, 2000);
+        setTimeout(() => { msg.style.display = 'none'; }, 2500);
     }
 </script>
 </body>
