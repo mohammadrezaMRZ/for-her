@@ -1,62 +1,99 @@
-<!-- status.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status Dashboard</title>
+    <title>وضعیت غزلیلی</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        
         body {
-            background-color: #F5F7FA;
             font-family: 'Vazirmatn', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            background: #f5f7fa;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
         }
-        .card {
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 400px;
+        .status-card {
+            width: 330px; background: white; border-radius: 28px;
+            padding: 30px; box-shadow: 0 15px 35px rgba(0, 71, 171, 0.1);
             text-align: center;
         }
-        .badge {
-            display: inline-block;
-            background: #0047AB;
-            color: white;
-            border-radius: 12px;
-            padding: 5px 10px;
-            margin: 5px;
+        .header { color: #0047AB; font-size: 22px; margin-bottom: 25px; font-weight: bold; }
+        
+        .data-row { 
+            display: flex; justify-content: space-between; padding: 12px 0;
+            border-bottom: 1px solid #f0f4f8; 
         }
+        .label { color: #718096; font-size: 14px; }
+        .value { color: #1A202C; font-weight: bold; }
+        
+        .badge-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; justify-content: flex-end; }
+        .badge { background: #f0f7ff; color: #0047AB; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; }
+
+        .cycle-box {
+            margin-top: 25px; background: #0047AB;
+            padding: 18px; border-radius: 20px; color: white;
+        }
+        .cycle-box div { font-size: 12px; opacity: 0.8; margin-bottom: 5px; }
+        .cycle-box strong { font-size: 18px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Current Mood: <span id="currentMood"></span></h2>
-        <div id="selectedSymptoms"></div>
-        <h3>Next Period: <span id="nextPeriod"></span></h3>
+
+<div class="status-card">
+    <div class="header">وضعیت امروز غزلیلی 🌸</div>
+    
+    <div class="data-row">
+        <span class="label">حالت روحی:</span>
+        <span class="value" id="mood-display">ثبت نشده</span>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function updateDashboard() {
-            const mood = localStorage.getItem('mood');
-            const symptoms = JSON.parse(localStorage.getItem('symptoms')) || [];
-            const nextPeriod = localStorage.getItem('nextPeriod');
 
-            $('#currentMood').text(mood);
-            $('#selectedSymptoms').empty();
-            symptoms.forEach(symptom => {
-                $('#selectedSymptoms').append('<span class="badge">' + symptom + '</span>');
+    <div style="text-align: right; padding-top: 15px;">
+        <span class="label">علائم ثبت شده:</span>
+        <div class="badge-container" id="symptoms-display"></div>
+    </div>
+    
+    <div class="cycle-box">
+        <div>موعد پیش‌بینی شده بعدی:</div>
+        <strong id="period-display">تاریخی ثبت نشده</strong>
+    </div>
+</div>
+
+<script>
+    function refreshData() {
+        // دریافت از حافظه
+        const mood = localStorage.getItem('mood') || 'ثبت نشده';
+        const symptoms = JSON.parse(localStorage.getItem('symptoms') || '[]');
+        const nextP = localStorage.getItem('nextPeriod') || 'نامشخص';
+
+        // نمایش داده‌ها
+        document.getElementById('mood-display').textContent = mood;
+        document.getElementById('period-display').textContent = nextP;
+
+        const sContainer = document.getElementById('symptoms-display');
+        sContainer.innerHTML = ''; // پاک کردن قبلی‌ها
+        
+        if (symptoms.length > 0) {
+            symptoms.forEach(s => {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.textContent = s;
+                sContainer.appendChild(span);
             });
-            $('#nextPeriod').text(nextPeriod);
+        } else {
+            sContainer.innerHTML = '<span style="color:#cbd5e0; font-size:12px;">بدون علامت</span>';
         }
+    }
 
-        window.addEventListener('storage', updateDashboard);
-        setInterval(updateDashboard, 1000);
-        updateDashboard();
-    </script>
+    // اجرای اولیه
+    refreshData();
+
+    // گوش دادن به تغییرات حافظه (برای آپدیت آنی)
+    window.addEventListener('storage', refreshData);
+    
+    // چک کردن هر ۱ ثانیه برای اطمینان از آپدیت بودن
+    setInterval(refreshData, 1000);
+</script>
+
 </body>
 </html>
