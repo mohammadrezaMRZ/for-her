@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل ثبت وضعیت - غزلیلی</title>
+    <title>ثبت وضعیت - غزلیلی</title>
     
     <script src="https://cdn.jsdelivr.net/gh/jalaali/jalaali-js@1.1.3/dist/jalaali.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
@@ -18,7 +18,6 @@
             --primary: #0047AB; /* آبی کاربنی */
             --bg: #f5f7fa;
             --white: #ffffff;
-            --text: #1A202C;
             --border: #e2e8f0;
         }
 
@@ -33,20 +32,18 @@
             border-radius: 28px; padding: 25px; box-shadow: 0 10px 25px rgba(0, 71, 171, 0.08);
         }
 
-        h1 { color: var(--primary); text-align: center; font-size: 22px; margin-bottom: 20px; }
+        h1 { color: var(--primary); text-align: center; font-size: 22px; }
 
         .tabs { display: flex; background: #edf2f7; border-radius: 16px; padding: 5px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; cursor: pointer; background: transparent; color: #718096; font-weight: bold; transition: 0.3s; }
+        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; cursor: pointer; background: transparent; color: #718096; font-weight: bold; }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        .section { display: none; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        .section { display: none; }
         .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        
         .option { 
-            padding: 15px 8px; border: 2px solid var(--border); border-radius: 14px; 
-            background: white; color: var(--text); cursor: pointer; font-family: inherit;
-            transition: 0.2s; font-weight: 500; text-align: center;
+            padding: 15px; border: 2px solid var(--border); border-radius: 14px; 
+            background: white; cursor: pointer; font-family: inherit; font-weight: 500;
         }
         .option.active { border-color: var(--primary); background: #f0f7ff; color: var(--primary); }
 
@@ -58,13 +55,11 @@
         .primary-btn {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 16px; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer;
-            transition: 0.3s;
         }
-        .primary-btn:active { transform: scale(0.98); }
 
         #status-msg { 
             text-align: center; color: #2dce89; font-weight: bold; margin-top: 15px; 
-            display: none; font-size: 15px;
+            display: none; font-size: 16px;
         }
     </style>
 </head>
@@ -81,32 +76,33 @@
 
     <div id="moodSection" class="section" style="display:block;">
         <div class="grid-options">
-            <button class="option" onclick="selectSingle(this, 'mood', '🙂 خوبم')">🙂 خوبم</button>
-            <button class="option" onclick="selectSingle(this, 'mood', '😐 خسته')">😐 خسته</button>
-            <button class="option" onclick="selectSingle(this, 'mood', '😔 حساس')">😔 حساس</button>
-            <button class="option" onclick="selectSingle(this, 'mood', '😠 عصبی')">😠 عصبی</button>
+            <button class="option" onclick="selectMood(this, '🙂 خوبم')">🙂 خوبم</button>
+            <button class="option" onclick="selectMood(this, '😐 خسته')">😐 خسته</button>
+            <button class="option" onclick="selectMood(this, '😔 حساس')">😔 حساس</button>
+            <button class="option" onclick="selectMood(this, '😠 عصبی')">😠 عصبی</button>
         </div>
     </div>
 
     <div id="symptomSection" class="section">
         <div class="grid-options">
-            <button class="option" onclick="toggleMulti(this, '😴 خستگی')">😴 خستگی</button>
-            <button class="option" onclick="toggleMulti(this, '🔥 درد')">🔥 درد</button>
-            <button class="option" onclick="toggleMulti(this, '🤕 سردرد')">🤕 سردرد</button>
-            <button class="option" onclick="toggleMulti(this, '🍫 هوس')">🍫 هوس</button>
+            <button class="option" onclick="toggleSymptom(this, '😴 خستگی')">😴 خستگی</button>
+            <button class="option" onclick="toggleSymptom(this, '🔥 درد')">🔥 درد</button>
+            <button class="option" onclick="toggleSymptom(this, '🤕 سردرد')">🤕 سردرد</button>
+            <button class="option" onclick="toggleSymptom(this, '🍫 هوس')">🍫 هوس</button>
         </div>
     </div>
 
     <div id="cycleSection" class="section">
-        <label style="font-size: 13px; color: #718096;">تاریخ آخرین شروع قاعدگی:</label>
-        <input type="text" id="datepicker" placeholder="--- انتخاب تاریخ ---" readonly>
+        <input type="text" id="datepicker" placeholder="انتخاب تاریخ آخرین پریود" readonly>
         <button class="primary-btn" onclick="saveAll()">ثبت اطلاعات</button>
         <div id="status-msg"></div>
     </div>
 </div>
 
 <script>
-    let selectedSymptoms = JSON.parse(localStorage.getItem('symptoms') || '[]');
+    // این متغیرها در حافظه موقت (RAM) هستند و با رفرش پاک می‌شوند
+    let currentMood = "";
+    let selectedSymptoms = [];
 
     function showTab(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
@@ -115,62 +111,46 @@
         btn.classList.add('active');
     }
 
-    function selectSingle(btn, key, value) {
-        btn.parentElement.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
-        btn.classList.add('active');
-        localStorage.setItem(key, value);
+    function selectMood(btn, val) {
+        $(btn).parent().find('.option').removeClass('active');
+        $(btn).addClass('active');
+        currentMood = val;
     }
 
-    function toggleMulti(btn, value) {
-        btn.classList.toggle('active');
-        if (selectedSymptoms.includes(value)) {
-            selectedSymptoms = selectedSymptoms.filter(s => s !== value);
+    function toggleSymptom(btn, val) {
+        $(btn).toggleClass('active');
+        if (selectedSymptoms.includes(val)) {
+            selectedSymptoms = selectedSymptoms.filter(s => s !== val);
         } else {
-            selectedSymptoms.push(value);
+            selectedSymptoms.push(val);
         }
-        localStorage.setItem('symptoms', JSON.stringify(selectedSymptoms));
     }
 
     $(document).ready(function() {
-        $("#datepicker").persianDatepicker({
-            format: 'YYYY/MM/DD',
-            autoClose: true,
-            initialValue: false
-        });
-        
-        // Load button states from local storage
-        const currentMood = localStorage.getItem('mood');
-        if(currentMood) {
-            $(".option:contains('"+currentMood+"')").addClass('active');
-        }
-        selectedSymptoms.forEach(s => {
-            $(".option:contains('"+s+"')").addClass('active');
-        });
+        $("#datepicker").persianDatepicker({ format: 'YYYY/MM/DD', autoClose: true });
     });
 
     function saveAll() {
+        // ذخیره دائمی برای فایل status
+        if(currentMood) localStorage.setItem('savedMood', currentMood);
+        localStorage.setItem('savedSymptoms', JSON.stringify(selectedSymptoms));
+        
         const dateStr = document.getElementById('datepicker').value;
         if(dateStr) {
             let [jy,jm,jd] = dateStr.split('/').map(Number);
             let g = jalaali.toGregorian(jy,jm,jd);
             let lastDate = new Date(g.gy, g.gm-1, g.gd);
-            
-            // Calculate 28 days later for the next period
             let nextP = new Date(lastDate.getTime() + 28*24*60*60*1000);
             let nextJ = jalaali.toJalaali(nextP.getFullYear(), nextP.getMonth()+1, nextP.getDate());
-            
-            let formattedNext = `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`;
-            localStorage.setItem('nextPeriod', formattedNext);
+            localStorage.setItem('savedNextPeriod', `${nextJ.jy}/${nextJ.jm}/${nextJ.jd}`);
         }
 
-        // Display the requested message
+        // نمایش پیام اختصاصی
         const msg = document.getElementById('status-msg');
-        msg.textContent = "ثبت شد غزلیلیی ممرییی ✅";
+        msg.textContent = "ثبت شد غزلیلییی ممرییی ✅";
         msg.style.display = 'block';
         
-        setTimeout(() => {
-            msg.style.display = 'none';
-        }, 3000);
+        setTimeout(() => { msg.style.display = 'none'; }, 3000);
     }
 </script>
 </body>
